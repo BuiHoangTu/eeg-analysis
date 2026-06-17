@@ -1,0 +1,8 @@
+## IDE
+# VSCode
+.vscode/
+
+data/
+*.edf
+__pycache__/
+*.py[cod]
