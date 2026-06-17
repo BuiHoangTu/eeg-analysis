@@ -12,10 +12,15 @@ def upload_edf_file():
         raw object if file uploaded, None otherwise
     """
     st.subheader("Upload EDF File")
-    
+
     uploaded_file = st.file_uploader("Upload PhysioNet EEG EDF file", type=["edf"])
 
     if uploaded_file:
+        file_key = f"{uploaded_file.name}:{uploaded_file.size}"
+        if st.session_state.get("uploaded_edf_key") != file_key:
+            st.session_state["uploaded_edf_key"] = file_key
+            st.session_state["show_visualisation"] = False
+
         with tempfile.NamedTemporaryFile(delete=False, suffix=".edf") as tmp:
             tmp.write(uploaded_file.read())
             edf_path = tmp.name
@@ -43,6 +48,10 @@ def upload_edf_file():
         else:
             st.write("No annotations found.")
 
-        return raw
+        if st.button("Submit for visualisation", type="primary"):
+            st.session_state["show_visualisation"] = True
+
+        if st.session_state.get("show_visualisation", False):
+            return raw
 
     return None
