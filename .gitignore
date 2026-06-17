@@ -2,7 +2,9 @@
 # VSCode
 .vscode/
 
-data/
+data/*
 *.edf
+!data/.gitkeep
+
 __pycache__/
 *.py[cod]
