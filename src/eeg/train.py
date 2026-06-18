@@ -1,8 +1,11 @@
+import joblib
 import numpy as np
 from sklearn.metrics import accuracy_score, confusion_matrix, f1_score
 from sklearn.model_selection import GroupShuffleSplit, StratifiedShuffleSplit
 
 from src.eeg.config import RANDOM_STATE
+from src.eeg.data_loader import MODEL_DIR, discover_edf_files, load_feature_dataset
+from src.eeg.models import ALL_MODELS
 
 
 LABEL_ORDER = ("T1", "T2")
@@ -35,3 +38,43 @@ def evaluate_model(estimator, X_test, y_test):
             y_test, predictions, labels=list(LABEL_ORDER)
         ).tolist()
     }
+
+
+def main():
+    files = discover_edf_files()
+    features, labels, subjects, metadata, feature_names, skipped_files = (
+        load_feature_dataset(files)
+    )
+
+    X = features.to_numpy()
+    train_index, test_index = split(labels, subjects)
+    X_train, X_test = X[train_index], X[test_index]
+    y_train, y_test = labels[train_index], labels[test_index]
+
+    MODEL_DIR.mkdir(exist_ok=True)
+    results = {}
+
+    for model_name, model_factory in ALL_MODELS.items():
+        model = model_factory()
+        model.fit(X_train, y_train)
+        metrics = evaluate_model(model, X_test, y_test)
+
+        artifact = {
+            "model": model,
+            "metrics": metrics,
+        }
+        model_path = MODEL_DIR / f"{model_name}.joblib"
+        joblib.dump(artifact, model_path)
+        results[model_name] = metrics
+
+        print(f"{model_name}: {metrics}")
+
+    print(f"Loaded {len(metadata)} epochs with {len(feature_names)} features.")
+    if skipped_files:
+        print(f"Skipped {len(skipped_files)} files.")
+
+    return results
+
+
+if __name__ == "__main__":
+    main()
