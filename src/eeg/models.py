@@ -14,3 +14,6 @@ def logisticRegression():
 
 def randomForest():
     return RandomForestClassifier(n_estimators=200, random_state=RANDOM_STATE)
+
+
+ALL_MODELS = {"logisticRegression": logisticRegression, "randomForest": randomForest}
