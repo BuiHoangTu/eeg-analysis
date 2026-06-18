@@ -12,8 +12,6 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 DATA_ROOT = PROJECT_ROOT / "data" / "physionet.org" / "files" / "eegmmidb" / "1.0.0"
 MODEL_DIR = PROJECT_ROOT / "models"
 SELECTED_RUNS = ("R04", "R08", "R12")
-LABEL_ORDER = ("T1", "T2")
-RANDOM_STATE = 42
 PREPROCESSING_ARGS = {
     "channels": list(DEFAULT_CHANNELS),
     "l_freq": 8.0,
