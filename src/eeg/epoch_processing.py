@@ -2,11 +2,7 @@ import pandas as pd
 import mne
 from mne.io.edf.edf import RawEDF
 
-EVENT_LABELS = {
-    "T1": "imagined left fist",
-    "T2": "imagined right fist",
-}
-DEFAULT_CHANNELS = ("C3", "Cz", "C4")
+from src.eeg.config import DEFAULT_CHANNELS, EVENT_LABELS
 
 
 class PreprocessingError(ValueError):

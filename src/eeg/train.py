@@ -3,10 +3,9 @@ import numpy as np
 from sklearn.metrics import accuracy_score, confusion_matrix, f1_score
 from sklearn.model_selection import GroupShuffleSplit, StratifiedShuffleSplit
 
-from src.eeg.config import RANDOM_STATE
-from src.eeg.data_loader import MODEL_DIR, discover_edf_files, load_feature_dataset
+from src.eeg.config import MODEL_DIR, PREPROCESSING_ARGS, RANDOM_STATE, SELECTED_RUNS
+from src.eeg.data_loader import discover_edf_files, load_feature_dataset
 from src.eeg.models import ALL_MODELS
-
 
 LABEL_ORDER = ("T1", "T2")
 
@@ -36,7 +35,7 @@ def evaluate_model(estimator, X_test, y_test):
         "macro_f1": float(f1_score(y_test, predictions, average="macro")),
         "confusion_matrix": confusion_matrix(
             y_test, predictions, labels=list(LABEL_ORDER)
-        ).tolist()
+        ).tolist(),
     }
 
 
@@ -60,8 +59,16 @@ def main():
         metrics = evaluate_model(model, X_test, y_test)
 
         artifact = {
-            "model": model,
+            "estimator": model,
+            "model_name": model_name,
             "metrics": metrics,
+            "feature_names": feature_names,
+            "channels": PREPROCESSING_ARGS["channels"],
+            "preprocessing": PREPROCESSING_ARGS,
+            "feature_method": "log_bandpower",
+            "selected_runs": SELECTED_RUNS,
+            "training_epochs": int(len(metadata)),
+            "skipped_files": skipped_files,
         }
         model_path = MODEL_DIR / f"{model_name}.joblib"
         joblib.dump(artifact, model_path)

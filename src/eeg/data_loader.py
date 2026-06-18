@@ -1,26 +1,9 @@
-from pathlib import Path
-
 import mne
 import pandas as pd
 
-from src.eeg.epoch_processing import DEFAULT_CHANNELS, PreprocessingError, prepare_motor_imagery_epochs
+from src.eeg.config import DATA_ROOT, PREPROCESSING_ARGS, PROJECT_ROOT, SELECTED_RUNS
+from src.eeg.epoch_processing import PreprocessingError, prepare_motor_imagery_epochs
 from src.eeg.features import extract_log_bandpower_features
-
-
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
-
-DATA_ROOT = PROJECT_ROOT / "data" / "physionet.org" / "files" / "eegmmidb" / "1.0.0"
-MODEL_DIR = PROJECT_ROOT / "models"
-SELECTED_RUNS = ("R04", "R08", "R12")
-PREPROCESSING_ARGS = {
-    "channels": list(DEFAULT_CHANNELS),
-    "l_freq": 8.0,
-    "h_freq": 30.0,
-    "notch_freq": 60.0,
-    "tmin": 0.5,
-    "tmax": 3.5,
-    "resample_sfreq": None,
-}
 
 
 def discover_edf_files(data_root=DATA_ROOT):
