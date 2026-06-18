@@ -45,8 +45,30 @@ def render_model_summary(artifact):
 
     metrics = artifact.get("metrics")
     if metrics:
-        st.write("**Offline evaluation summary**")
-        st.json(metrics)
+        st.write("**Model evaluation summary**")
+        metrics_display = dict(metrics)
+
+        cm = metrics_display.pop("confusion_matrix", None)
+
+        st.table(
+            pd.DataFrame(
+                {
+                    "Metric": metrics_display.keys(),
+                    "Value": [str(v) for v in metrics_display.values()],
+                }
+            )
+        )
+        if cm is not None:
+            labels = ["T1", "T2"]
+
+            cm_df = pd.DataFrame(
+                cm,
+                index=[f"Actual {label}" for label in labels],
+                columns=[f"Predicted {label}" for label in labels],
+            )
+
+            st.subheader("Confusion Matrix")
+            st.dataframe(cm_df, use_container_width=True)
 
 
 def build_results_table(event_metadata, predictions, confidence):
@@ -161,7 +183,7 @@ def render_motor_imagery_inference(raw):
         "selected_model": selected_model,
     }
 
-    if st.button("Run inference on T1/T2 epochs"):
+    if st.button("Run inference"):
         try:
             st.session_state["motor_imagery_results"] = run_inference(raw, artifact)
             st.session_state["motor_imagery_results_context"] = inference_context

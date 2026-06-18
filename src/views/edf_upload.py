@@ -48,7 +48,7 @@ def upload_edf_file():
         else:
             st.write("No annotations found.")
 
-        if st.button("Submit for visualisation", type="primary"):
+        if st.button("Submit", type="primary"):
             st.session_state["show_visualisation"] = True
 
         if st.session_state.get("show_visualisation", False):
